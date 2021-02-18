@@ -46,8 +46,7 @@ int main(int argc, char **argv) {
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
-        im = cv::imread(string(argv[3]) + "/MAV_Images/" + vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
-        //cout << string(argv[3]) + "/MAV_Images/" + vstrImageFilenames[ni] << endl;
+        im = cv::imread(string(argv[3]) + vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
         double tframe = vTimestamps[ni];
 
         if(im.empty())
@@ -109,31 +108,34 @@ int main(int argc, char **argv) {
 void LoadImages(const string &strFile, const string &timeFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
 {
     ifstream f;
-    string strTimesFile = strFile + "/imgs.txt";
+    string strTimesFile = timeFile;
+    cout << strTimesFile << endl;
     f.open(strTimesFile.c_str());
+
     while(!f.eof())
     {
         string s;
         getline(f,s);
+        if (s[0] == '#')
+            continue;
+
         if(!s.empty())
         {
-            stringstream ss;
-            ss << s;
-            vstrImageFilenames.push_back(s + ".jpg");
-        }
-    }
-    f.close();
-    f.open(timeFile.c_str());
-    while(!f.eof())
-    {
-        string s;
-        getline(f,s);
-        if(!s.empty())
-        {
-            stringstream tt;
-            double t;
-            tt << t;
-            vTimestamps.push_back(t);
+            string item;
+            size_t pos = 0;
+            string data[3];
+            int count = 0;
+            while ((pos = s.find(',')) != string::npos) {
+                if(count == 2) break;
+                item = s.substr(0, pos);
+                data[count++] = item;
+                s.erase(0, pos + 1);
+            }
+            item = s.substr(0, pos);
+            data[2] = item;
+            cout << data[0] << " : " << data[1] << " : " << data[2] << endl;
+            vTimestamps.push_back(stod(data[0])/1e9);
+            vstrImageFilenames.push_back(data[2] + ".jpg");
         }
     }
 }

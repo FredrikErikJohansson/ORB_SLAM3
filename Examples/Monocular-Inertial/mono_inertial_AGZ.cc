@@ -46,8 +46,9 @@ int main(int argc, char **argv) {
     }
 
     // Find first imu to be considered, supposing imu measurements start first
-    while(vTimestampsImu[first_imu]<=vTimestampsCam[0])
+    while(vTimestampsImu[first_imu]<=vTimestampsCam[0]) {
         first_imu++;
+    }
     first_imu--; // first imu measurement to be considered
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
@@ -68,7 +69,7 @@ int main(int argc, char **argv) {
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
-        im = cv::imread(string(argv[3]) + "/MAV_Images/" + vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
+        im = cv::imread(string(argv[3]) + vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
         double tframe = vTimestampsCam[ni];
 
         // Clahe
@@ -147,34 +148,35 @@ int main(int argc, char **argv) {
 void LoadImages(const string &strFile, const string &timeFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
 {
     ifstream f;
-    string strTimesFile = strFile + "/imgs.txt";
+    string strTimesFile = timeFile;
+    cout << strTimesFile << endl;
     f.open(strTimesFile.c_str());
+
     while(!f.eof())
     {
         string s;
         getline(f,s);
+        if (s[0] == '#')
+            continue;
+
         if(!s.empty())
         {
-            stringstream ss;
-            ss << s;
-            vstrImageFilenames.push_back(s + ".jpg");
+            string item;
+            size_t pos = 0;
+            string data[3];
+            int count = 0;
+            while ((pos = s.find(',')) != string::npos) {
+                if(count == 2) break;
+                item = s.substr(0, pos);
+                data[count++] = item;
+                s.erase(0, pos + 1);
+            }
+            item = s.substr(0, pos);
+            data[2] = item;
+            vTimestamps.push_back(stod(data[0])/1e9);
+            vstrImageFilenames.push_back(data[2] + ".jpg");
         }
     }
-    f.close();
-    f.open(timeFile.c_str());
-    while(!f.eof())
-    {
-        string s;
-        getline(f,s);
-        if(!s.empty())
-        {
-            stringstream tt;
-            double t;
-            tt << t;
-            vTimestamps.push_back(t);
-        }
-    }
-    f.close();
 }
 
 void LoadIMU(const string &strImuPath, vector<double> &vTimeStamps, vector<cv::Point3f> &vAcc, vector<cv::Point3f> &vGyro)
