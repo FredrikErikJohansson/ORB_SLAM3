@@ -497,7 +497,7 @@ void System::SaveMappedPoints(const string &filename) {
         z.push_back(v.z());
     }
     // Add data to each property
-    plyOut.getElement("vertex").addProperty<<float>("x", x);
+    plyOut.getElement("vertex").addProperty<float>("x", x);
     plyOut.getElement("vertex").addProperty<float>("y", y);
     plyOut.getElement("vertex").addProperty<float>("z", z);
     // Write the object to file
