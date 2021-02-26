@@ -112,6 +112,7 @@ include/CameraModels/KannalaBrandt8.h
 include/OptimizableTypes.h
 include/MLPnPsolver.h
 include/TwoViewReconstruction.h
+include/happly.h
 src/TwoViewReconstruction.cc)
 
 add_subdirectory(Thirdparty/g2o)
@@ -128,27 +129,6 @@ ${PROJECT_SOURCE_DIR}/Thirdparty/g2o/lib/libg2o.so
 
 
 # Build examples
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/RGB-D)
-add_executable(rgbd_tum
-Examples/RGB-D/rgbd_tum.cc)
-target_link_libraries(rgbd_tum ${PROJECT_NAME})
-
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo)
-
-add_executable(stereo_kitti
-Examples/Stereo/stereo_kitti.cc)
-target_link_libraries(stereo_kitti ${PROJECT_NAME})
-
-add_executable(stereo_euroc
-Examples/Stereo/stereo_euroc.cc)
-target_link_libraries(stereo_euroc ${PROJECT_NAME})
-
-add_executable(stereo_tum_vi
-Examples/Stereo/stereo_tum_vi.cc)
-target_link_libraries(stereo_tum_vi ${PROJECT_NAME})
-
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular)
 
@@ -188,17 +168,5 @@ target_link_libraries(mono_inertial_tum_vi ${PROJECT_NAME})
 add_executable(mono_inertial_AGZ
 Examples/Monocular-Inertial/mono_inertial_AGZ.cc)
 target_link_libraries(mono_inertial_AGZ ${PROJECT_NAME})
-
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Stereo-Inertial)
-
-add_executable(stereo_inertial_euroc
-Examples/Stereo-Inertial/stereo_inertial_euroc.cc)
-target_link_libraries(stereo_inertial_euroc ${PROJECT_NAME})
-
-
-add_executable(stereo_inertial_tum_vi
-Examples/Stereo-Inertial/stereo_inertial_tum_vi.cc)
-target_link_libraries(stereo_inertial_tum_vi ${PROJECT_NAME})
 
 
