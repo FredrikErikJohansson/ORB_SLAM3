@@ -16,7 +16,7 @@
 * If not, see <http://www.gnu.org/licenses/>.
 */
 
-
+#include "happly.h"
 
 #include "System.h"
 #include "Converter.h"
@@ -475,7 +475,34 @@ void System::Shutdown()
         pangolin::BindToContext("ORB-SLAM2: Map Viewer");
 }
 
+void System::SaveMappedPoints(const string &filename) {
+    cout << endl << "Saving mapped points to " << filename << " ..." << endl;
 
+    std::vector<float> x;
+    std::vector<float> y;
+    std::vector<float> z;
+
+    happly::PLYData plyOut;
+    vector<MapPoint*> allMPs = mpAtlas->GetAllMapPoints();
+
+    std::cout << "# size=" << allMPs.size() << std::endl;
+    plyOut.addElement("vertex", allMPs.size());
+    std::cout << "# x,y,z" << std::endl;
+    for (auto p : allMPs) {
+        if(p->isBad()) continue;
+        Eigen::Matrix<double, 3, 1> v = Converter::toVector3d(p->GetWorldPos());
+        // Store data in respective vector
+        x.push_back(v.x());
+        y.push_back(v.y());
+        z.push_back(v.z());
+    }
+    // Add data to each property
+    plyOut.getElement("vertex").addProperty<<float>("x", x);
+    plyOut.getElement("vertex").addProperty<float>("y", y);
+    plyOut.getElement("vertex").addProperty<float>("z", z);
+    // Write the object to file
+    plyOut.write(filename, happly::DataFormat::ASCII);
+}
 
 void System::SaveTrajectoryTUM(const string &filename)
 {
@@ -485,7 +512,6 @@ void System::SaveTrajectoryTUM(const string &filename)
         cerr << "ERROR: SaveTrajectoryTUM cannot be used for monocular." << endl;
         return;
     }
-
     vector<KeyFrame*> vpKFs = mpAtlas->GetAllKeyFrames();
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
 
