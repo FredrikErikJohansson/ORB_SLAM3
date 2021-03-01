@@ -1,5 +1,5 @@
 #!/bin/bash
-pathDatasetAGZ='/home/fredrik/Projects/datasets/AGZ' #Example, it is necesary to change it by the dataset path
+pathDatasetAGZ='/absolute/path/to/dataset' #Example, it is necesary to change it by the dataset path
 
 #------------------------------------
 # Monocular Examples

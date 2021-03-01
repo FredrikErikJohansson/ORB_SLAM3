@@ -153,6 +153,10 @@ add_executable(mono_AGZ
 Examples/Monocular/mono_AGZ.cc)
 target_link_libraries(mono_AGZ ${PROJECT_NAME})
 
+# DJI mono
+add_executable(mono_DJI
+Examples/Monocular/mono_DJI.cc)
+target_link_libraries(mono_DJI ${PROJECT_NAME})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/Examples/Monocular-Inertial)
 
@@ -169,4 +173,7 @@ add_executable(mono_inertial_AGZ
 Examples/Monocular-Inertial/mono_inertial_AGZ.cc)
 target_link_libraries(mono_inertial_AGZ ${PROJECT_NAME})
 
-
+# DJI inertial mono
+add_executable(mono_inertial_DJI
+Examples/Monocular-Inertial/mono_inertial_DJI.cc)
+target_link_libraries(mono_inertial_DJI ${PROJECT_NAME})
