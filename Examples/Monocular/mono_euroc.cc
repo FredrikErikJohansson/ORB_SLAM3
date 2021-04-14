@@ -157,6 +157,8 @@ int main(int argc, char **argv)
         SLAM.SaveKeyFrameTrajectoryEuRoC("KeyFrameTrajectory.txt");
     }
 
+    SLAM.SaveMappedPoints("pointcloud.ply");
+
     return 0;
 }
 
