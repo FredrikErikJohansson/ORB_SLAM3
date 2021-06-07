@@ -43,7 +43,10 @@ Vocabulary/ORBvoc.txt
 build/
 
 lib/
-
+/Gistad Ortho Evaluations
+/EuRoC Evaluations
+/Gistad Smooth Evaluations
+/TUM_MONO_Evaluations
 cmake_modules/
 cmake-build-debug/
 
