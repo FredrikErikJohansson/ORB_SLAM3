@@ -64,7 +64,8 @@ int main(int argc, char **argv)
     for (seq = 0; seq<num_seq; seq++)
     {
         cout << "Loading images for sequence " << seq << "...";
-        LoadImages(string(argv[(2*seq)+3]) + "/mav0/cam0/data", string(argv[(2*seq)+4]), vstrImageFilenames[seq], vTimestampsCam[seq]);
+        // mav0/cam0/data
+        LoadImages(string(argv[(2*seq)+3]) + "/", string(argv[(2*seq)+4]), vstrImageFilenames[seq], vTimestampsCam[seq]);
         cout << "LOADED!" << endl;
 
         nImages[seq] = vstrImageFilenames[seq].size();
@@ -91,7 +92,10 @@ int main(int argc, char **argv)
         {
 
             // Read image from file
-            im = cv::imread(vstrImageFilenames[seq][ni],CV_LOAD_IMAGE_UNCHANGED);
+            //std::cout << string(argv[3]) + vstrImageFilenames[seq][ni] << std::endl;
+            //im = cv::imread(vstrImageFilenames[seq][ni],CV_LOAD_IMAGE_UNCHANGED);
+
+            im = cv::imread(string(argv[3]) + "/" + vstrImageFilenames[seq][ni],cv::IMREAD_UNCHANGED);
             double tframe = vTimestampsCam[seq][ni];
 
             if(im.empty())
@@ -157,31 +161,67 @@ int main(int argc, char **argv)
         SLAM.SaveKeyFrameTrajectoryEuRoC("KeyFrameTrajectory.txt");
     }
 
-    SLAM.SaveMappedPoints("pointcloud.ply");
+    SLAM.SaveMappedPoints(string(argv[argc-1]) + ".ply");
 
     return 0;
 }
 
-void LoadImages(const string &strImagePath, const string &strPathTimes,
-                vector<string> &vstrImages, vector<double> &vTimeStamps)
+// void LoadImages(const string &strImagePath, const string &strPathTimes,
+//                 vector<string> &vstrImages, vector<double> &vTimeStamps)
+// {
+//     ifstream fTimes;
+//     fTimes.open(strPathTimes.c_str());
+//     vTimeStamps.reserve(5000);
+//     vstrImages.reserve(5000);
+//     while(!fTimes.eof())
+//     {
+//         string s;
+//         getline(fTimes,s);
+//         if(!s.empty())
+//         {
+//             stringstream ss;
+//             ss << s;
+//             vstrImages.push_back(strImagePath + "/" + ss.str() + ".png");
+//             double t;
+//             ss >> t;
+//             vTimeStamps.push_back(t/1e9);
+
+//         }
+//     }
+// }
+
+// DJI
+void LoadImages(const string &strFile, const string &timeFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
 {
-    ifstream fTimes;
-    fTimes.open(strPathTimes.c_str());
-    vTimeStamps.reserve(5000);
-    vstrImages.reserve(5000);
-    while(!fTimes.eof())
+    ifstream f;
+    string strTimesFile = timeFile;
+    cout << strTimesFile << endl;
+    f.open(strTimesFile.c_str());
+
+    while(!f.eof())
     {
         string s;
-        getline(fTimes,s);
+        getline(f,s);
+        if (s[0] == '#')
+            continue;
+
         if(!s.empty())
         {
-            stringstream ss;
-            ss << s;
-            vstrImages.push_back(strImagePath + "/" + ss.str() + ".png");
-            double t;
-            ss >> t;
-            vTimeStamps.push_back(t/1e9);
-
+            string item;
+            size_t pos = 0;
+            string data[3];
+            int count = 0;
+            while ((pos = s.find(',')) != string::npos) {
+                if(count == 2) break;
+                item = s.substr(0, pos);
+                data[count++] = item;
+                s.erase(0, pos + 1);
+            }
+            item = s.substr(0, pos);
+            data[2] = item;
+            cout << data[0] << " : " << data[1] << " : " << data[2] << endl;
+            vTimestamps.push_back(stod(data[0])/1e9);
+            vstrImageFilenames.push_back(data[2] + ".jpg");
         }
     }
 }

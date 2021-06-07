@@ -507,11 +507,11 @@ void System::SaveMappedPoints(const string &filename) {
 void System::SaveTrajectoryTUM(const string &filename)
 {
     cout << endl << "Saving camera trajectory to " << filename << " ..." << endl;
-    if(mSensor==MONOCULAR)
-    {
-        cerr << "ERROR: SaveTrajectoryTUM cannot be used for monocular." << endl;
-        return;
-    }
+    // if(mSensor==MONOCULAR)
+    // {
+    //     cerr << "ERROR: SaveTrajectoryTUM cannot be used for monocular." << endl;
+    //     return;
+    // }
     vector<KeyFrame*> vpKFs = mpAtlas->GetAllKeyFrames();
     sort(vpKFs.begin(),vpKFs.end(),KeyFrame::lId);
 

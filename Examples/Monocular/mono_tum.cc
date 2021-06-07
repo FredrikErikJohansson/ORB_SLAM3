@@ -34,7 +34,7 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames,
 
 int main(int argc, char **argv)
 {
-    if(argc != 4)
+    if(argc < 5)
     {
         cerr << endl << "Usage: ./mono_tum path_to_vocabulary path_to_settings path_to_sequence" << endl;
         return 1;
@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     // Retrieve paths to images
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
-    string strFile = string(argv[3])+"/rgb.txt";
+    string strFile = string(argv[3])+"/times.txt";
     LoadImages(strFile, vstrImageFilenames, vTimestamps);
 
     int nImages = vstrImageFilenames.size();
@@ -64,13 +64,13 @@ int main(int argc, char **argv)
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
-        im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
+        im = cv::imread(string(argv[3])+"/images/"+vstrImageFilenames[ni]+".jpg",cv::IMREAD_UNCHANGED);
         double tframe = vTimestamps[ni];
 
         if(im.empty())
         {
             cerr << endl << "Failed to load image at: "
-                 << string(argv[3]) << "/" << vstrImageFilenames[ni] << endl;
+                 << string(argv[3]) << "/images/" << vstrImageFilenames[ni] << endl;
             return 1;
         }
 
@@ -119,21 +119,34 @@ int main(int argc, char **argv)
     cout << "mean tracking time: " << totaltime/nImages << endl;
 
     // Save camera trajectory
-    SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    //SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+        // Save camera trajectory
+
+    const string kf_file =  "kf_" + string(argv[4]) + ".txt";
+    const string f_file =  "f_" + string(argv[4]) + ".txt";
+    SLAM.SaveTrajectoryTUM(f_file);
+    SLAM.SaveKeyFrameTrajectoryTUM(kf_file);
+
+
+
+    SLAM.SaveMappedPoints(string(argv[4]) + ".ply");
 
     return 0;
 }
 
 void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vector<double> &vTimestamps)
 {
+    cout << "Load Images... " << endl;
+
     ifstream f;
     f.open(strFile.c_str());
+    cout << "Opened " << strFile.c_str() << endl;
 
     // skip first three lines
-    string s0;
-    getline(f,s0);
-    getline(f,s0);
-    getline(f,s0);
+    // string s0;
+    // getline(f,s0);
+    // getline(f,s0);
+    // getline(f,s0);
 
     while(!f.eof())
     {
@@ -145,10 +158,10 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
             ss << s;
             double t;
             string sRGB;
-            ss >> t;
-            vTimestamps.push_back(t);
             ss >> sRGB;
             vstrImageFilenames.push_back(sRGB);
+            ss >> t;
+            vTimestamps.push_back(t);
         }
     }
 }
