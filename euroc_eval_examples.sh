@@ -1,49 +1,36 @@
 #!/bin/bash
 pathDatasetEuroc='/home/frejo/Master-thesis/datasets/EuRoC' #Example, it is necesary to change it by the dataset path
 
-# Single Session Example (Pure visual)
-# echo "Launching MH01 with Stereo sensor"
-# ./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo/EuRoC.yaml "$pathDatasetEuroc"/MH01 ./Examples/Stereo/EuRoC_TimeStamps/MH01.txt dataset-MH01_stereo
-# echo "------------------------------------"
-# echo "Evaluation of MH01 trajectory with Stereo sensor"
-# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH01_GT.txt f_dataset-MH01_stereo.txt --plot MH01_stereo.pdf
-
-
-
-# # MultiSession Example (Pure visual)
-# echo "Launching Machine Hall with Stereo sensor"
-# ./Examples/Stereo/stereo_euroc ./Vocabulary/ORBvoc.txt ./Examples/Stereo/EuRoC.yaml "$pathDatasetEuroc"/MH01 ./Examples/Stereo/EuRoC_TimeStamps/MH01.txt "$pathDatasetEuroc"/MH02 ./Examples/Stereo/EuRoC_TimeStamps/MH02.txt "$pathDatasetEuroc"/MH03 ./Examples/Stereo/EuRoC_TimeStamps/MH03.txt "$pathDatasetEuroc"/MH04 ./Examples/Stereo/EuRoC_TimeStamps/MH04.txt "$pathDatasetEuroc"/MH05 ./Examples/Stereo/EuRoC_TimeStamps/MH05.txt dataset-MH01_to_MH05_stereo
-# echo "------------------------------------"
-# echo "Evaluation of MAchine Hall trajectory with Stereo sensor"
-# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH_GT.txt f_dataset-MH01_to_MH05_stereo.txt --plot MH01_to_MH05_stereo.pdf
-
-
-# # Single Session Example (Visual-Inertial)
-# echo "Launching V102 with Monocular-Inertial sensor"
-# ./Examples/Monocular-Inertial/mono_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular-Inertial/EuRoC.yaml "$pathDatasetEuroc"/V102 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/V102.txt dataset-V102_monoi
-# echo "------------------------------------"
-# echo "Evaluation of V102 trajectory with Monocular-Inertial sensor"
-# python evaluation/evaluate_ate_scale.py "$pathDatasetEuroc"/V102/mav0/state_groundtruth_estimate0/data.csv f_dataset-V102_monoi.txt --plot V102_monoi.pdf
-
-
-# # MultiSession Monocular Examples
-
-# echo "Launching Vicon Room 2 with Monocular-Inertial sensor"
-# ./Examples/Monocular-Inertial/mono_inertial_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular-Inertial/EuRoC.yaml "$pathDatasetEuroc"/V201 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/V201.txt "$pathDatasetEuroc"/V202 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/V202.txt "$pathDatasetEuroc"/V203 ./Examples/Monocular-Inertial/EuRoC_TimeStamps/V203.txt dataset-V201_to_V203_monoi
-# echo "------------------------------------"
-# echo "Evaluation of Vicon Room 2 trajectory with Stereo sensor"
-# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_imu/V2_GT.txt f_dataset-V201_to_V203_monoi.txt --plot V201_to_V203_monoi.pdf
-
-
-#Single Session Monocular Example (Pure visual)
-# echo "Launching MH05 with Monocular sensor"
-# ./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml "$pathDatasetEuroc"/MH05 ./Examples/Monocular/EuRoC_TimeStamps/MH05.txt dataset-MH05_mono
-# echo "------------------------------------"
-# echo "Evaluation of MH05 trajectory with Monocular sensor"
-# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH05_GT.txt f_dataset-MH05_mono.txt --plot MH05_mono.pdf
-
 echo "Launching MH02 with Monocular sensor"
 ./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml "$pathDatasetEuroc"/MH02 ./Examples/Monocular/EuRoC_TimeStamps/MH02.txt dataset-MH02_mono
 echo "------------------------------------"
 echo "Evaluation of MH02 trajectory with Monocular sensor"
-python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH02_GT.txt f_dataset-MH02_mono.txt --plot MH02_mono.pdf --verbose
+python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH02_GT.txt kf_dataset-MH02_mono.txt --plot MH02_mono.pdf --result MH02_data.txt --verbose
+
+# echo "Launching MH05 with Monocular sensor"
+# ./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml "$pathDatasetEuroc"/MH05 ./Examples/Monocular/EuRoC_TimeStamps/MH05.txt dataset-MH05_mono
+# echo "------------------------------------"
+# echo "Evaluation of MH05 trajectory with Monocular sensor"
+# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/MH05_GT.txt f_dataset-MH05_mono.txt --plot MH05_mono.pdf --result MH05_data.txt --verbose
+
+# echo "Launching V201 with Monocular sensor"
+# ./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml "$pathDatasetEuroc"/V201 ./Examples/Monocular/EuRoC_TimeStamps/V201.txt dataset-V201_mono
+# echo "------------------------------------"
+# echo "Evaluation of V201 trajectory with Monocular sensor"
+# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/V201_GT.txt f_dataset-V201_mono.txt --plot V201_mono.pdf --result V201_data.txt --verbose
+
+# echo "Launching V202 with Monocular sensor"
+# ./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml "$pathDatasetEuroc"/V202 ./Examples/Monocular/EuRoC_TimeStamps/V202.txt dataset-V202_mono
+# echo "------------------------------------"
+# echo "Evaluation of V202 trajectory with Monocular sensor"
+# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/V202_GT.txt f_dataset-V202_mono.txt --plot V202_mono.pdf --result V202_data.txt --verbose
+
+# echo "Launching V203 with Monocular sensor"
+# ./Examples/Monocular/mono_euroc ./Vocabulary/ORBvoc.txt ./Examples/Monocular/EuRoC.yaml "$pathDatasetEuroc"/V203 ./Examples/Monocular/EuRoC_TimeStamps/V203.txt dataset-V203_mono
+# echo "------------------------------------"
+# echo "Evaluation of V203 trajectory with Monocular sensor"
+# python evaluation/evaluate_ate_scale.py evaluation/Ground_truth/EuRoC_left_cam/V203_GT.txt f_dataset-V203_mono.txt --plot V203_mono.pdf --result V203_data.txt --verbose
+
+
+
+

@@ -484,22 +484,106 @@ void System::SaveMappedPoints(const string &filename) {
 
     happly::PLYData plyOut;
     vector<MapPoint*> allMPs = mpAtlas->GetAllMapPoints();
+    vector<KeyFrame*> allKFs = mpAtlas->GetAllKeyFrames();
+
+    ofstream myfile;
+    myfile.open ("gistad_oblique_UV_geocetric.txt");
+
+    long long count = 0;
+
+    for(auto p : allMPs) {
+        if(p->isBad()) continue;
+        auto obs = p->GetObservations();
+        for(map<KeyFrame*,tuple<int,int>>::iterator mit=obs.begin(), mend=obs.end(); mit!=mend; mit++) {
+            count++;
+            KeyFrame* pKFi = mit->first;
+            tuple<int,int> indexes = mit->second;
+            int leftIndex = get<0>(indexes), rightIndex = get<1>(indexes);
+
+            std::string fN = pKFi->mNameFile;
+            std::string fNN = fN.substr(0, fN.size()-4);
+                     myfile << std::fixed;
+            myfile << p->mnId << "," << fNN << "," << pKFi->mvKeysUn[leftIndex].pt.x << "," << pKFi->mvKeysUn[leftIndex].pt.y;// << "\n";
+
+            // World coords
+            Eigen::Matrix<double, 3, 1> v1 = Converter::toVector3d(p->GetWorldPos());
+            Eigen::Matrix<double, 4, 1> v;
+            v[0] = v1[0];
+            v[1] = v1[1];
+            v[2] = v1[2];
+            v[3] = 1;
+
+            double trans_ORB_points[3] = {0.33858092, -0.12238755,  1.15024343};
+            double scale_ORB_points = 0.49984379938133755;
+
+            // Transform to center to meet geocentric
+            v[0] -= trans_ORB_points[0];
+            v[1] -= trans_ORB_points[1];
+            v[2] -= trans_ORB_points[2];
+            v[0] /= scale_ORB_points;
+            v[1] /= scale_ORB_points;
+            v[2] /= scale_ORB_points;
+
+            //
+            double scale = 28.95575717655312;
+            double trans[3] = {3216228.78028612,  915892.46623398, 5413096.36017732};
+            
+            Eigen::Matrix4d rot_x;
+            rot_x << 1, 0, 0, 0,
+                    0, -1, -1.2246468e-16, 0,
+                    0, 1.2246468e-16, -1, 0,
+                    0, 0, 0, 1;
+
+            Eigen::Matrix4d rot_y;
+            rot_y << 0.70710678, 0, -0.70710678, 0,
+                    0, 1, 0, 0,
+                    0.70710678, 0, 0.70710678, 0,
+                    0, 0, 0, 1;
+
+            Eigen::Matrix4d trans_icp;
+            trans_icp << 0.56069522, 0.77439823, 0.2931352, 0.03059684,
+                        -0.41783235, 0.57025177, -0.70726873, 0.01357388,
+                        -0.71486852, 0.27408083, 0.64330607, -0.02221874,
+                        0, 0, 0, 1;
+
+            Eigen::Matrix<double, 4, 1> v_rot_x = rot_x * v;
+            Eigen::Matrix<double, 4, 1> v_rot_y = rot_y * v_rot_x;
+            Eigen::Matrix<double, 4, 1> v_trans_icp = trans_icp * v_rot_y;
+
+
+            //To geocentric
+            v_trans_icp[0] /= scale_ORB_points;
+            v_trans_icp[1] /= scale_ORB_points;
+            v_trans_icp[2] /= scale_ORB_points;
+            v_trans_icp[0] -= trans_ORB_points[0];
+            v_trans_icp[1] -= trans_ORB_points[1];
+            v_trans_icp[2] -= trans_ORB_points[2];
+
+            v_trans_icp[0] *= scale;
+            v_trans_icp[1] *= scale;
+            v_trans_icp[2] *= scale;
+            v_trans_icp[0] += trans[0];
+            v_trans_icp[1] += trans[1];
+            v_trans_icp[2] += trans[2];
+
+            myfile << "," << v_trans_icp.x() << "," << v_trans_icp.y() << "," << v_trans_icp.z() << "\n"; 
+
+            x.push_back(v_trans_icp.x());
+            y.push_back(v_trans_icp.y());
+            z.push_back(v_trans_icp.z());
+        }
+    }
+    myfile.close();
 
     std::cout << "# size=" << allMPs.size() << std::endl;
-    plyOut.addElement("vertex", allMPs.size());
+    plyOut.addElement("vertex", count);
     std::cout << "# x,y,z" << std::endl;
-    for (auto p : allMPs) {
-        if(p->isBad()) continue;
-        Eigen::Matrix<double, 3, 1> v = Converter::toVector3d(p->GetWorldPos());
-        // Store data in respective vector
-        x.push_back(v.x());
-        y.push_back(v.y());
-        z.push_back(v.z());
-    }
+
     // Add data to each property
     plyOut.getElement("vertex").addProperty<float>("x", x);
     plyOut.getElement("vertex").addProperty<float>("y", y);
     plyOut.getElement("vertex").addProperty<float>("z", z);
+    
     // Write the object to file
     plyOut.write(filename, happly::DataFormat::ASCII);
 }
@@ -730,6 +814,7 @@ void System::SaveKeyFrameTrajectoryEuRoC(const string &filename)
     {
         if(pMap->GetAllKeyFrames().size() > numMaxKFs)
         {
+
             numMaxKFs = pMap->GetAllKeyFrames().size();
             pBiggerMap = pMap;
         }

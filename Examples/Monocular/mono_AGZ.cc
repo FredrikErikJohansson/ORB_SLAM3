@@ -3,6 +3,7 @@
 #include<fstream>
 #include<chrono>
 #include<iomanip>
+#include <unordered_map>
 
 #include<opencv2/core/core.hpp>
 
@@ -41,6 +42,8 @@ int main(int argc, char **argv) {
     cout << "Start processing sequence ..." << endl;
     cout << "Images in the sequence: " << nImages << endl << endl;
 
+    std::unordered_map<size_t, vector<std::string>> pointsIDs;
+
     // Main loop
     cv::Mat im;
     for(int ni=0; ni<nImages; ni++)
@@ -63,6 +66,27 @@ int main(int argc, char **argv) {
 
         // Pass the image to the SLAM system
         SLAM.TrackMonocular(im,tframe,vector<ORB_SLAM3::IMU::Point>(), vstrImageFilenames[ni]);
+        // auto keyPointsUn = SLAM.GetTrackedKeyPointsUn();
+
+        
+        // for(auto kpUn : keyPointsUn) {
+        //     size_t hashVal = kpUn.hash();
+        //     kpUn.
+        //     std::string tmp = vstrImageFilenames[ni] + "," + std::to_string(kpUn.pt.x) + "," + std::to_string(kpUn.pt.y);
+        //     pointsIDs[hashVal].push_back(tmp);
+        //     //if(!pointsIDs.insert(kpUn.hash()).second) std::cout << "We found a match! \n"; 
+        //     // std::cout << "kpUn: , id: " << kpUn.hash()  << ", u: " << kpUn.pt.x << ", v: " << kpUn.pt.y << "\n";
+        // }
+        // std::cout << std::endl;
+
+        // auto mapPoints = SLAM.GetTrackedMapPoints();
+
+        // for(auto mP : mapPoints) {
+        //     if(mP->isBad()) continue;
+        //     std::cout << "mP: " << ", id: " << mP->mnId << ", u: " << mP->mTrackProjX << ", v:" << mP->mTrackProjY << "\n";
+        //     std::cout << "mP: " << ", id: " << mP->mnId << ", u: " << mP->mTrackProjXR << ", v:" << mP->mTrackProjYR << "\n";
+        // }
+
 
 #ifdef COMPILEDWITHC11
         std::chrono::steady_clock::time_point t2 = std::chrono::steady_clock::now();
@@ -88,6 +112,17 @@ int main(int argc, char **argv) {
     // Stop all threads
     SLAM.Shutdown();
 
+    // ofstream myfile;
+    // myfile.open("testtest.txt");
+    // for(auto row : pointsIDs) {
+    //     myfile << std::to_string(row.first) + ",";
+    //     for(auto i : row.second) {
+    //         myfile << i + ",";
+    //     }
+    //     myfile << "\n";
+    // }
+    // myfile.close();
+
     // Tracking time statistics
     sort(vTimesTrack.begin(),vTimesTrack.end());
     float totaltime = 0;
@@ -101,6 +136,8 @@ int main(int argc, char **argv) {
 
     // Save camera trajectory
     SLAM.SaveKeyFrameTrajectoryTUM("KeyFrameTrajectory.txt");
+    SLAM.SaveTrajectoryKITTI("CameraTrajectoryKITTI.txt");
+    SLAM.SaveTrajectoryEuRoC("CameraTrajectoryEuRoC.txt");
     SLAM.SaveMappedPoints("pointcloud.ply");
 
     return 0;

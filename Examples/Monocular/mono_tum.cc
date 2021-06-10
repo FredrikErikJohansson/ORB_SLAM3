@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     // Retrieve paths to images
     vector<string> vstrImageFilenames;
     vector<double> vTimestamps;
-    string strFile = string(argv[3])+"/rgb.txt";
+    string strFile = string(argv[3])+"/times.txt";
     LoadImages(strFile, vstrImageFilenames, vTimestamps);
 
     int nImages = vstrImageFilenames.size();
@@ -64,13 +64,13 @@ int main(int argc, char **argv)
     for(int ni=0; ni<nImages; ni++)
     {
         // Read image from file
-        im = cv::imread(string(argv[3])+"/"+vstrImageFilenames[ni],cv::IMREAD_UNCHANGED);
+        im = cv::imread(string(argv[3])+"/images/"+vstrImageFilenames[ni]+".jpg",cv::IMREAD_UNCHANGED);
         double tframe = vTimestamps[ni];
 
         if(im.empty())
         {
             cerr << endl << "Failed to load image at: "
-                 << string(argv[3]) << "/" << vstrImageFilenames[ni] << endl;
+                 << string(argv[3]) << "/images/" << vstrImageFilenames[ni] << endl;
             return 1;
         }
 
@@ -145,10 +145,10 @@ void LoadImages(const string &strFile, vector<string> &vstrImageFilenames, vecto
             ss << s;
             double t;
             string sRGB;
-            ss >> t;
-            vTimestamps.push_back(t);
             ss >> sRGB;
             vstrImageFilenames.push_back(sRGB);
+            ss << t;
+            vTimestamps.push_back(t);
         }
     }
 }
