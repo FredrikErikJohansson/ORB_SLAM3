@@ -26,13 +26,15 @@ Camera.RGB: 1
 # Camera resolution
 Camera.width: 1280
 Camera.height: 1024
+# Camera.width: 640
+# Camera.height: 480
 
 #--------------------------------------------------------------------------------------------
 # ORB Parameters
 #--------------------------------------------------------------------------------------------
 
 # ORB Extractor: Number of features per image
-ORBextractor.nFeatures: 1000
+ORBextractor.nFeatures: 2000
 
 # ORB Extractor: Scale factor between levels in the scale pyramid 	
 ORBextractor.scaleFactor: 1.2
